@@ -36,11 +36,19 @@ public class DoctorDashboardServlet extends HttpServlet {
             Doctor doctor = doctorDAO.findByUserId(userId)
                 .orElseThrow(() -> new OhmsException("Doctor profile not found."));
 
+            // Count only THIS doctor's appointments by status
+            long pending   = apptService.getDoctorAppointments(doctor.getId()).stream()
+                .filter(a -> a.getStatus().name().equals("PENDING")).count();
+            long confirmed = apptService.getDoctorAppointments(doctor.getId()).stream()
+                .filter(a -> a.getStatus().name().equals("CONFIRMED")).count();
+            long completed = apptService.getDoctorAppointments(doctor.getId()).stream()
+                .filter(a -> a.getStatus().name().equals("COMPLETED")).count();
+
             req.setAttribute("doctor",        doctor);
             req.setAttribute("appointments",  apptService.getDoctorAppointments(doctor.getId()));
-            req.setAttribute("pendingCount",  apptService.countPending());
-            req.setAttribute("confirmedCount",apptService.countConfirmed());
-            req.setAttribute("completedCount",apptService.countCompleted());
+            req.setAttribute("pendingCount",  pending);
+            req.setAttribute("confirmedCount",confirmed);
+            req.setAttribute("completedCount",completed);
 
             req.getRequestDispatcher("/jsp/doctor/dashboard.jsp").forward(req, resp);
 

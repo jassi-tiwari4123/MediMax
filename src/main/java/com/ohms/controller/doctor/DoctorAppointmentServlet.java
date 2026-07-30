@@ -38,8 +38,17 @@ public class DoctorAppointmentServlet extends HttpServlet {
             Doctor doctor = doctorDAO.findByUserId(userId)
                 .orElseThrow(() -> new OhmsException("Doctor profile not found."));
 
-            req.setAttribute("doctor",       doctor);
-            req.setAttribute("appointments", apptService.getDoctorAppointments(doctor.getId()));
+            var appointments = apptService.getDoctorAppointments(doctor.getId());
+
+            long pending   = appointments.stream().filter(a -> a.getStatus().name().equals("PENDING")).count();
+            long confirmed = appointments.stream().filter(a -> a.getStatus().name().equals("CONFIRMED")).count();
+            long completed = appointments.stream().filter(a -> a.getStatus().name().equals("COMPLETED")).count();
+
+            req.setAttribute("doctor",        doctor);
+            req.setAttribute("appointments",  appointments);
+            req.setAttribute("pendingCount",  pending);
+            req.setAttribute("confirmedCount",confirmed);
+            req.setAttribute("completedCount",completed);
             req.getRequestDispatcher("/jsp/doctor/appointments.jsp").forward(req, resp);
 
         } catch (OhmsException e) {

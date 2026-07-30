@@ -1,6 +1,9 @@
 package com.ohms.controller.auth;
 
+import com.ohms.dao.DepartmentDAO;
+import com.ohms.dao.DepartmentDAOImpl;
 import com.ohms.exception.OhmsException;
+import com.ohms.model.Department;
 import com.ohms.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -9,22 +12,25 @@ import javax.servlet.ServletException;
 import javax.servlet.http.*;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  * RegisterServlet — patient and doctor self-registration.
  *
  * URL: /register
- * GET  → show registration form
+ * GET  → show registration form (loads departments from DB)
  * POST → process registration, redirect to login on success
  */
 public class RegisterServlet extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(RegisterServlet.class);
-    private final AuthService authService = new AuthService();
+    private final AuthService   authService = new AuthService();
+    private final DepartmentDAO deptDAO     = new DepartmentDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+        loadDepartments(req);
         req.getRequestDispatcher("/jsp/common/register.jsp").forward(req, resp);
     }
 
@@ -64,12 +70,25 @@ public class RegisterServlet extends HttpServlet {
         } catch (OhmsException e) {
             logger.warn("Registration failed: {}", e.getMessage());
             req.setAttribute("error", e.getMessage());
-            req.setAttribute("formData", req.getParameterMap()); // re-populate form
+            req.setAttribute("formData", req.getParameterMap());
+            loadDepartments(req);
             req.getRequestDispatcher("/jsp/common/register.jsp").forward(req, resp);
 
         } catch (NumberFormatException e) {
             req.setAttribute("error", "Invalid numeric value in the form. Please check your inputs.");
+            loadDepartments(req);
             req.getRequestDispatcher("/jsp/common/register.jsp").forward(req, resp);
+        }
+    }
+
+    // ── Load departments from DB ──────────────────────────────────────────────
+    private void loadDepartments(HttpServletRequest req) {
+        try {
+            List<Department> departments = deptDAO.findActive();
+            req.setAttribute("departments", departments);
+        } catch (Exception e) {
+            logger.warn("Could not load departments: {}", e.getMessage());
+            req.setAttribute("departments", java.util.Collections.emptyList());
         }
     }
 }

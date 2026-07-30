@@ -58,6 +58,16 @@
          SERVLETS — URL-to-class mappings
          ============================================================ -->
 
+    <!-- Specialization AJAX -->
+    <servlet>
+        <servlet-name>SpecializationServlet</servlet-name>
+        <servlet-class>com.ohms.controller.auth.SpecializationServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SpecializationServlet</servlet-name>
+        <url-pattern>/get-specializations</url-pattern>
+    </servlet-mapping>
+
     <!-- Auth Servlets -->
     <servlet>
         <servlet-name>LoginServlet</servlet-name>
@@ -148,6 +158,25 @@
     <servlet-mapping>
         <servlet-name>AdminDepartmentServlet</servlet-name>
         <url-pattern>/admin/departments</url-pattern>
+    </servlet-mapping>
+
+    <!-- Profile Servlets -->
+    <servlet>
+        <servlet-name>DoctorProfileServlet</servlet-name>
+        <servlet-class>com.ohms.controller.doctor.DoctorProfileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DoctorProfileServlet</servlet-name>
+        <url-pattern>/doctor/profile</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>PatientProfileServlet</servlet-name>
+        <servlet-class>com.ohms.controller.patient.PatientProfileServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PatientProfileServlet</servlet-name>
+        <url-pattern>/patient/profile</url-pattern>
     </servlet-mapping>
 
     <!-- Doctor Servlets -->

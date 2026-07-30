@@ -36,6 +36,12 @@
                     <i class="bi bi-calendar3"></i> My Appointments
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link sidebar-link"
+                   href="${pageContext.request.contextPath}/doctor/profile">
+                    <i class="bi bi-person-circle"></i> My Profile
+                </a>
+            </li>
         </ul>
         <div class="px-2 pb-3">
             <hr class="border-secondary">
@@ -110,18 +116,21 @@
                     <div class="card border-0 shadow-sm text-center py-3">
                         <div class="fs-2 fw-bold text-warning">${pendingCount}</div>
                         <div class="text-muted small">Pending</div>
+                        <div class="text-muted" style="font-size:0.7rem;">My Appointments</div>
                     </div>
                 </div>
                 <div class="col-sm-4">
                     <div class="card border-0 shadow-sm text-center py-3">
                         <div class="fs-2 fw-bold text-primary">${confirmedCount}</div>
                         <div class="text-muted small">Confirmed</div>
+                        <div class="text-muted" style="font-size:0.7rem;">My Appointments</div>
                     </div>
                 </div>
                 <div class="col-sm-4">
                     <div class="card border-0 shadow-sm text-center py-3">
                         <div class="fs-2 fw-bold text-success">${completedCount}</div>
                         <div class="text-muted small">Completed</div>
+                        <div class="text-muted" style="font-size:0.7rem;">My Appointments</div>
                     </div>
                 </div>
             </div>

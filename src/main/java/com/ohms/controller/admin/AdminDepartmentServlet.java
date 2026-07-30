@@ -2,7 +2,10 @@ package com.ohms.controller.admin;
 
 import com.ohms.dao.DepartmentDAO;
 import com.ohms.dao.DepartmentDAOImpl;
+import com.ohms.dao.SpecializationDAO;
+import com.ohms.dao.SpecializationDAOImpl;
 import com.ohms.model.Department;
+import com.ohms.model.Specialization;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,18 +14,13 @@ import javax.servlet.http.*;
 import java.io.IOException;
 
 /**
- * AdminDepartmentServlet — CRUD for hospital departments.
- *
- * URL: /admin/departments
- * GET  → list all departments
- * POST ?action=add       → create new department
- * POST ?action=edit      → update department
- * POST ?action=toggle    → activate / deactivate department
+ * AdminDepartmentServlet — CRUD for hospital departments + specializations.
  */
 public class AdminDepartmentServlet extends HttpServlet {
 
     private static final Logger logger = LoggerFactory.getLogger(AdminDepartmentServlet.class);
-    private final DepartmentDAO deptDAO = new DepartmentDAOImpl();
+    private final DepartmentDAO    deptDAO = new DepartmentDAOImpl();
+    private final SpecializationDAO specDAO = new SpecializationDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -49,8 +47,22 @@ public class AdminDepartmentServlet extends HttpServlet {
                         req.getParameter("name"),
                         req.getParameter("description")
                     );
-                    deptDAO.save(d);
-                    req.getSession().setAttribute("flashSuccess", "Department added.");
+                    int deptId = deptDAO.save(d);
+
+                    // Save specializations (one per line)
+                    String specsRaw = req.getParameter("specializations");
+                    if (specsRaw != null && !specsRaw.isBlank()) {
+                        String[] lines = specsRaw.split("\\r?\\n");
+                        for (String line : lines) {
+                            String trimmed = line.trim();
+                            if (!trimmed.isEmpty()) {
+                                Specialization spec = new Specialization(deptId, trimmed);
+                                specDAO.save(spec);
+                            }
+                        }
+                    }
+                    req.getSession().setAttribute("flashSuccess",
+                        "Department added with specializations.");
                 }
                 case "edit" -> {
                     int deptId = Integer.parseInt(req.getParameter("deptId"));

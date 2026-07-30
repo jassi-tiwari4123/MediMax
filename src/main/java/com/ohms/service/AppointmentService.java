@@ -152,6 +152,24 @@ public class AppointmentService {
 
         appointmentDAO.updateStatus(appointmentId,
                                     AppointmentStatus.CONFIRMED.name(), null, null);
+
+        // Send confirmation email to patient
+        try {
+            Patient patient = patientDAO.findById(appt.getPatientId()).orElse(null);
+            Doctor  doctor  = doctorDAO.findById(appt.getDoctorId()).orElse(null);
+            if (patient != null && doctor != null && patient.getUser() != null) {
+                emailService.sendAppointmentConfirmation(
+                    patient.getUser().getEmail(),
+                    patient.getFullName(),
+                    doctor.getFullName(),
+                    appt.getAppointmentDate().toString(),
+                    appt.getAppointmentTime().toString()
+                );
+            }
+        } catch (Exception e) {
+            logger.warn("Confirmation email failed: {}", e.getMessage());
+        }
+
         logger.info("Appointment {} confirmed.", appointmentId);
     }
 

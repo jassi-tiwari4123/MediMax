@@ -18,7 +18,7 @@ import java.io.IOException;
  *   - GET /login  → forwards to login.jsp
  *   - POST /login → validates credentials, sets JWT cookie, redirects by role
  *   - JWT stored in HTTP-only cookie (not accessible by JavaScript — XSS protection)
- *   - SameSite=Strict on cookie prevents CSRF
+ *   - Always clears stale cookies before showing login form
  *
  * URL: /login
  */
@@ -27,12 +27,22 @@ public class LoginServlet extends HttpServlet {
     private static final Logger logger = LoggerFactory.getLogger(LoginServlet.class);
     private final AuthService authService = new AuthService();
 
-    // ── GET — show login form ────────────────────────────────────
+    // ── GET — show login form ─────────────────────────────────────────────────
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
 
-        // If already logged in, redirect to appropriate dashboard
+        String sessionExpired = req.getParameter("sessionExpired");
+        String logout         = req.getParameter("logout");
+
+        // If coming from logout or session expiry — clear cookie and show login
+        if (logout != null || sessionExpired != null) {
+            clearJwtCookie(resp);
+            req.getRequestDispatcher("/jsp/common/login.jsp").forward(req, resp);
+            return;
+        }
+
+        // If valid JWT cookie exists — auto-redirect to dashboard
         Cookie[] cookies = req.getCookies();
         if (cookies != null) {
             for (Cookie c : cookies) {
@@ -42,7 +52,8 @@ public class LoginServlet extends HttpServlet {
                         resp.sendRedirect(req.getContextPath() + dashboardFor(role));
                         return;
                     } catch (Exception ignored) {
-                        // Stale/invalid cookie — fall through to show login
+                        // Invalid/expired cookie — clear it and show login
+                        clearJwtCookie(resp);
                     }
                 }
             }
@@ -51,7 +62,7 @@ public class LoginServlet extends HttpServlet {
         req.getRequestDispatcher("/jsp/common/login.jsp").forward(req, resp);
     }
 
-    // ── POST — process login ─────────────────────────────────────
+    // ── POST — process login ──────────────────────────────────────────────────
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
@@ -59,19 +70,20 @@ public class LoginServlet extends HttpServlet {
         String email    = req.getParameter("email");
         String password = req.getParameter("password");
 
-        try {
-            // Delegate to service — throws AuthException on failure
-            String token = authService.login(email, password);
+        // Always clear any existing JWT cookie before setting a new one
+        // This ensures switching accounts works correctly
+        clearJwtCookie(resp);
 
-            // Extract role to know which dashboard to redirect to
+        try {
+            String token = authService.login(email, password);
             com.ohms.enums.Role role = JwtUtil.getRoleFromToken(token);
 
-            // Set JWT in HTTP-only cookie
+            // Set new JWT cookie for the logged-in user
             Cookie jwtCookie = new Cookie(JwtUtil.COOKIE_NAME, token);
-            jwtCookie.setHttpOnly(true);          // not accessible via JS
-            jwtCookie.setSecure(false);           // set true in production (HTTPS)
+            jwtCookie.setHttpOnly(true);
+            jwtCookie.setSecure(false);   // set true in production (HTTPS)
             jwtCookie.setPath("/");
-            jwtCookie.setMaxAge(1800);            // 30 minutes — matches JWT expiry
+            jwtCookie.setMaxAge(1800);    // 30 minutes
             resp.addCookie(jwtCookie);
 
             logger.info("Login success: email={}, role={}", email, role);
@@ -88,11 +100,21 @@ public class LoginServlet extends HttpServlet {
         }
     }
 
+    // ── Helpers ───────────────────────────────────────────────────────────────
+
     private String dashboardFor(com.ohms.enums.Role role) {
         return switch (role) {
             case ADMIN   -> "/admin/dashboard";
             case DOCTOR  -> "/doctor/dashboard";
             case PATIENT -> "/patient/dashboard";
         };
+    }
+
+    private void clearJwtCookie(HttpServletResponse resp) {
+        Cookie clear = new Cookie(JwtUtil.COOKIE_NAME, "");
+        clear.setMaxAge(0);
+        clear.setPath("/");
+        clear.setHttpOnly(true);
+        resp.addCookie(clear);
     }
 }

@@ -2,6 +2,7 @@ package com.ohms.service;
 
 import com.itextpdf.text.*;
 import com.itextpdf.text.pdf.*;
+import com.itextpdf.text.pdf.draw.LineSeparator;
 import com.ohms.model.*;
 import com.ohms.utility.AppConfig;
 import org.slf4j.Logger;
@@ -54,69 +55,83 @@ public class PdfService {
      */
     public String generatePrescriptionPdf(Prescription presc) throws Exception {
 
-        // Create output directory if not exists (File Handling)
-        String outputDir = AppConfig.get("pdf.output.dir", "/tmp/ohms/prescriptions");
+        // Create output directory if not exists
+        String outputDir = AppConfig.get("pdf.output.dir", "C:/ohms/prescriptions");
         File dir = new File(outputDir);
-        if (!dir.exists()) dir.mkdirs();
+        if (!dir.exists()) {
+            boolean created = dir.mkdirs();
+            logger.info("Created PDF directory: {} = {}", outputDir, created);
+        }
 
-        String fileName  = "prescription_" + presc.getId() + "_"
-                         + System.currentTimeMillis() + ".pdf";
-        String filePath  = outputDir + File.separator + fileName;
+        String fileName = "prescription_" + presc.getId() + "_"
+                        + System.currentTimeMillis() + ".pdf";
+        String filePath = outputDir + File.separator + fileName;
+
+        logger.info("Starting PDF generation: {}", filePath);
 
         Document doc = new Document(PageSize.A4, 36, 36, 36, 36);
+        FileOutputStream fos = new FileOutputStream(filePath);
 
-        try (FileOutputStream fos = new FileOutputStream(filePath)) {
-            PdfWriter.getInstance(doc, fos);
+        try {
+            PdfWriter writer = PdfWriter.getInstance(doc, fos);
             doc.open();
 
-            // ── Header ──────────────────────────────────────────
+            if (!doc.isOpen()) {
+                throw new Exception("iText Document failed to open.");
+            }
+
             addHeader(doc, presc);
-
             doc.add(Chunk.NEWLINE);
-
-            // ── Patient & Doctor Info ────────────────────────────
             addPatientDoctorInfo(doc, presc);
-
             doc.add(Chunk.NEWLINE);
 
-            // ── Diagnosis ────────────────────────────────────────
             if (presc.getDiagnosis() != null && !presc.getDiagnosis().isBlank()) {
                 doc.add(new Paragraph("Diagnosis:", FONT_LABEL));
                 doc.add(new Paragraph(presc.getDiagnosis(), FONT_NORMAL));
                 doc.add(Chunk.NEWLINE);
             }
 
-            // ── Medicines Table ──────────────────────────────────
-            addMedicinesTable(doc, presc);
+            if (presc.getItems() != null && !presc.getItems().isEmpty()) {
+                addMedicinesTable(doc, presc);
+                doc.add(Chunk.NEWLINE);
+            }
 
-            doc.add(Chunk.NEWLINE);
-
-            // ── Instructions ─────────────────────────────────────
             if (presc.getInstructions() != null && !presc.getInstructions().isBlank()) {
                 doc.add(new Paragraph("General Instructions:", FONT_LABEL));
                 doc.add(new Paragraph(presc.getInstructions(), FONT_NORMAL));
                 doc.add(Chunk.NEWLINE);
             }
 
-            // ── Follow-up ────────────────────────────────────────
             if (presc.getFollowUpDate() != null) {
                 doc.add(new Paragraph(
-                    "Follow-up Date: " + presc.getFollowUpDate().format(DATE_FMT),
-                    FONT_LABEL));
+                    "Follow-up Date: " + presc.getFollowUpDate().format(DATE_FMT), FONT_LABEL));
                 doc.add(Chunk.NEWLINE);
             }
 
-            // ── Doctor Signature ─────────────────────────────────
             addSignature(doc, presc);
-
-            // ── Footer ───────────────────────────────────────────
             addFooter(doc);
 
-        } finally {
-            if (doc.isOpen()) doc.close();
+            doc.close();
+            fos.flush();
+            fos.close();
+
+        } catch (Exception e) {
+            // Close document and stream on error
+            try { if (doc.isOpen()) doc.close(); } catch (Exception ignored) {}
+            try { fos.close(); } catch (Exception ignored) {}
+            // Delete corrupt file
+            new File(filePath).delete();
+            logger.error("PDF generation failed: {}", e.getMessage(), e);
+            throw e;
         }
 
-        logger.info("Prescription PDF generated: {}", filePath);
+        // Verify file was written
+        File pdfFile = new File(filePath);
+        if (!pdfFile.exists() || pdfFile.length() == 0) {
+            throw new Exception("PDF file was created but is empty: " + filePath);
+        }
+
+        logger.info("PDF generated successfully: {} ({} bytes)", filePath, pdfFile.length());
         return filePath;
     }
 

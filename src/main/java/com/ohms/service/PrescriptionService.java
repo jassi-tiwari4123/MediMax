@@ -41,14 +41,15 @@ public class PrescriptionService {
      */
     public Prescription create(Prescription prescription) throws OhmsException {
 
-        // Step 1 — Appointment must be COMPLETED
+        // Step 1 — Allow prescription for CONFIRMED or COMPLETED appointment
         Appointment appt = appointmentDAO.findById(prescription.getAppointmentId())
             .orElseThrow(() -> new ResourceNotFoundException(
                 "Appointment", prescription.getAppointmentId()));
 
-        if (appt.getStatus() != com.ohms.enums.AppointmentStatus.COMPLETED) {
+        if (appt.getStatus() != com.ohms.enums.AppointmentStatus.COMPLETED
+         && appt.getStatus() != com.ohms.enums.AppointmentStatus.CONFIRMED) {
             throw new AppointmentException(
-                "Prescription can only be created for a COMPLETED appointment.");
+                "Prescription can only be created for a CONFIRMED or COMPLETED appointment.");
         }
 
         // Step 2 — Save to DB (transactional — both header + items)
@@ -59,16 +60,21 @@ public class PrescriptionService {
         try {
             Doctor  doctor  = doctorDAO.findById(prescription.getDoctorId()).orElse(null);
             Patient patient = patientDAO.findById(prescription.getPatientId()).orElse(null);
+
             prescription.setDoctor(doctor);
             prescription.setPatient(patient);
+
+            // Load prescription items
+            prescription.setItems(prescriptionDAO.findItemsByPrescription(prescId));
 
             String pdfPath = pdfService.generatePrescriptionPdf(prescription);
 
             // Step 4 — Store PDF path
             prescriptionDAO.updatePdfPath(prescId, pdfPath);
             prescription.setPdfPath(pdfPath);
+            logger.info("PDF generated successfully at: {}", pdfPath);
 
-            // Step 5 — Email patient
+            // Step 5 — Email patient (patient.getUser() is populated by PatientDAOImpl JOIN)
             if (patient != null && doctor != null && patient.getUser() != null) {
                 emailService.sendPrescriptionReady(
                     patient.getUser().getEmail(),
@@ -77,8 +83,7 @@ public class PrescriptionService {
                 );
             }
         } catch (Exception e) {
-            logger.warn("PDF/email step failed for prescription {}: {}", prescId, e.getMessage());
-            // Not fatal — prescription is saved; patient can download from portal
+            logger.error("PDF/email FAILED for prescription {}: {}", prescId, e.getMessage(), e);
         }
 
         logger.info("Prescription {} created for appointment {}",

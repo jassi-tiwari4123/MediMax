@@ -131,7 +131,7 @@
 
 <%-- Add Department Modal --%>
 <div class="modal fade" id="addDeptModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <form method="post" action="${pageContext.request.contextPath}/admin/departments">
             <input type="hidden" name="action" value="add">
             <div class="modal-content">
@@ -143,12 +143,21 @@
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Department Name</label>
                         <input type="text" name="name" class="form-control"
-                               placeholder="e.g. Cardiology" required maxlength="100">
+                               placeholder="e.g. Oncology" required maxlength="100">
                     </div>
                     <div class="mb-3">
                         <label class="form-label fw-semibold">Description</label>
-                        <textarea name="description" class="form-control" rows="3"
+                        <textarea name="description" class="form-control" rows="2"
                                   placeholder="Brief description..."></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            Specializations
+                            <small class="text-muted fw-normal">(one per line)</small>
+                        </label>
+                        <textarea name="specializations" class="form-control" rows="5"
+                                  placeholder="Surgical Oncologist&#10;Medical Oncologist&#10;Radiation Oncologist&#10;Pediatric Oncologist"></textarea>
+                        <div class="form-text">These will appear in the dropdown when doctors register.</div>
                     </div>
                 </div>
                 <div class="modal-footer">

@@ -42,6 +42,12 @@
                     <i class="bi bi-calendar-plus"></i> Book Appointment
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link sidebar-link"
+                   href="${pageContext.request.contextPath}/patient/profile">
+                    <i class="bi bi-person-circle"></i> My Profile
+                </a>
+            </li>
         </ul>
         <div class="px-2 pb-3">
             <hr class="border-secondary">
@@ -162,10 +168,18 @@
                                                 </button>
                                             </c:if>
                                             <c:if test="${appt.status.name() eq 'COMPLETED'}">
-                                                <a href="${pageContext.request.contextPath}/patient/download-prescription?prescriptionId=${appt.id}"
-                                                   class="btn btn-sm btn-outline-success">
-                                                    <i class="bi bi-file-earmark-pdf me-1"></i>Rx
-                                                </a>
+                                                <c:set var="prescId" value="${apptToPrescId[appt.id]}"/>
+                                                <c:choose>
+                                                    <c:when test="${not empty prescId}">
+                                                        <a href="${pageContext.request.contextPath}/patient/download-prescription?prescriptionId=${prescId}"
+                                                           class="btn btn-sm btn-outline-success">
+                                                            <i class="bi bi-download me-1"></i>Rx PDF
+                                                        </a>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <span class="badge bg-secondary">No Rx yet</span>
+                                                    </c:otherwise>
+                                                </c:choose>
                                             </c:if>
                                         </td>
                                     </tr>
