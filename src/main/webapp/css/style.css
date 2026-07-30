@@ -1,0 +1,250 @@
+/* =============================================================
+   OHMS — Online Healthcare Management System
+   Main Stylesheet
+   ============================================================= */
+
+/* ── Variables ────────────────────────────────────────────── */
+:root {
+    --ohms-primary:   #0d6efd;
+    --ohms-sidebar:   #1a2035;
+    --ohms-sidebar-w: 250px;
+    --ohms-transition: all 0.25s ease;
+}
+
+/* ── Base ─────────────────────────────────────────────────── */
+body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background-color: #f0f2f5;
+    color: #212529;
+}
+
+/* ── Auth pages background ────────────────────────────────── */
+.auth-bg {
+    background: linear-gradient(135deg, #0d6efd 0%, #0a4fc4 50%, #1a2035 100%);
+    min-height: 100vh;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 440px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+}
+
+/* ── OHMS header band ─────────────────────────────────────── */
+.ohms-header {
+    background: linear-gradient(135deg, #0d6efd, #0a4fc4);
+}
+
+/* ── Layout ───────────────────────────────────────────────── */
+.wrapper {
+    min-height: 100vh;
+}
+
+/* ── Sidebar ──────────────────────────────────────────────── */
+.sidebar {
+    width: var(--ohms-sidebar-w);
+    min-width: var(--ohms-sidebar-w);
+    background-color: var(--ohms-sidebar);
+    transition: var(--ohms-transition);
+    overflow-y: auto;
+}
+
+.sidebar-brand {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    min-height: 64px;
+}
+
+.sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.75) !important;
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 2px;
+    transition: var(--ohms-transition);
+    font-size: 0.92rem;
+}
+
+.sidebar-link i {
+    font-size: 1.1rem;
+    min-width: 20px;
+    text-align: center;
+}
+
+.sidebar-link:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff !important;
+}
+
+.sidebar-link.active {
+    background-color: var(--ohms-primary);
+    color: #fff !important;
+    font-weight: 600;
+}
+
+/* ── Main content ─────────────────────────────────────────── */
+.main-content {
+    overflow-y: auto;
+    min-height: 100vh;
+    background-color: #f0f2f5;
+}
+
+/* Collapsed sidebar */
+.sidebar.collapsed {
+    width: 0;
+    min-width: 0;
+    overflow: hidden;
+}
+
+/* ── Cards ────────────────────────────────────────────────── */
+.card {
+    border-radius: 12px;
+}
+
+.card-header {
+    border-radius: 12px 12px 0 0 !important;
+    padding: 14px 20px;
+}
+
+/* ── Stat Cards ───────────────────────────────────────────── */
+.stat-card {
+    border-radius: 12px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1) !important;
+}
+
+.stat-icon {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Tables ───────────────────────────────────────────────── */
+.table th {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #6c757d;
+}
+
+.table td {
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+.table-hover > tbody > tr:hover {
+    background-color: rgba(13, 110, 253, 0.04);
+}
+
+/* ── Badges ───────────────────────────────────────────────── */
+.badge {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+/* ── Buttons ──────────────────────────────────────────────── */
+.btn {
+    border-radius: 8px;
+    font-weight: 500;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #0d6efd, #0a4fc4);
+    border: none;
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #0a58ca, #0944b0);
+    box-shadow: 0 6px 16px rgba(13, 110, 253, 0.4);
+}
+
+/* ── Forms ────────────────────────────────────────────────── */
+.form-control, .form-select {
+    border-radius: 8px;
+    border-color: #dee2e6;
+    padding: 10px 14px;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--ohms-primary);
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+/* ── Navbar ───────────────────────────────────────────────── */
+.navbar {
+    min-height: 64px;
+}
+
+/* ── Alerts ───────────────────────────────────────────────── */
+.alert {
+    border-radius: 10px;
+    border: none;
+}
+
+/* ── Pagination ───────────────────────────────────────────── */
+.page-link {
+    border-radius: 6px;
+    margin: 0 2px;
+}
+
+/* ── Prescription form medicine rows ─────────────────────── */
+.medicine-row {
+    background: #f8f9fa;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 8px;
+    border: 1px solid #e9ecef;
+}
+
+/* ── Error pages ──────────────────────────────────────────── */
+.error-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh;
+    text-align: center;
+}
+
+.error-code {
+    font-size: 6rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--ohms-primary);
+}
+
+/* ── Responsive ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+    .sidebar {
+        position: fixed;
+        z-index: 1000;
+        height: 100vh;
+    }
+
+    .sidebar.collapsed {
+        width: 0;
+    }
+
+    .main-content {
+        width: 100%;
+    }
+
+    .auth-card {
+        margin: 1rem;
+    }
+}

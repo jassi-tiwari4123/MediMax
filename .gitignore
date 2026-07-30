@@ -1,0 +1,41 @@
+# ================================================================
+# OHMS — .gitignore
+# ================================================================
+
+# ── Maven build output ────────────────────────────────────────
+target/
+*.class
+*.war
+*.jar
+*.ear
+
+# ── IDE files ─────────────────────────────────────────────────
+.idea/
+*.iml
+.eclipse/
+.classpath
+.project
+.settings/
+*.launch
+.vscode/settings.json
+*.factorypath
+
+# ── Secrets — NEVER commit these ─────────────────────────────
+# application.properties contains DB password, JWT secret, email password
+# Use application.properties.example as a template instead
+src/main/resources/application.properties
+
+# ── Generated PDFs ────────────────────────────────────────────
+/tmp/
+
+# ── OS files ──────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ── Log files ─────────────────────────────────────────────────
+*.log
+logs/
+
+# ── Node (if any frontend tooling added later) ────────────────
+node_modules/

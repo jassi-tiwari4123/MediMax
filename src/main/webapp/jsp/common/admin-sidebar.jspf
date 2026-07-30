@@ -1,0 +1,52 @@
+<%-- Admin sidebar — included in all admin JSPs --%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<nav id="sidebar" class="sidebar d-flex flex-column">
+    <div class="sidebar-brand d-flex align-items-center p-3">
+        <i class="bi bi-hospital fs-4 me-2 text-white"></i>
+        <div>
+            <div class="fw-bold text-white lh-1">OHMS</div>
+            <small class="text-white-50" style="font-size:0.7rem;">Admin Panel</small>
+        </div>
+    </div>
+
+    <ul class="nav flex-column px-2 flex-grow-1">
+        <li class="nav-item">
+            <a class="nav-link sidebar-link ${pageContext.request.servletPath.contains('dashboard') ? 'active' : ''}"
+               href="${pageContext.request.contextPath}/admin/dashboard">
+                <i class="bi bi-speedometer2"></i> Dashboard
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link sidebar-link ${pageContext.request.servletPath.contains('doctors') ? 'active' : ''}"
+               href="${pageContext.request.contextPath}/admin/doctors">
+                <i class="bi bi-person-badge"></i> Manage Doctors
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link sidebar-link ${pageContext.request.servletPath.contains('patients') ? 'active' : ''}"
+               href="${pageContext.request.contextPath}/admin/patients">
+                <i class="bi bi-people"></i> Manage Patients
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link sidebar-link ${pageContext.request.servletPath.contains('appointments') ? 'active' : ''}"
+               href="${pageContext.request.contextPath}/admin/appointments">
+                <i class="bi bi-calendar3"></i> Appointments
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link sidebar-link ${pageContext.request.servletPath.contains('departments') ? 'active' : ''}"
+               href="${pageContext.request.contextPath}/admin/departments">
+                <i class="bi bi-building"></i> Departments
+            </a>
+        </li>
+    </ul>
+
+    <div class="px-2 pb-3">
+        <hr class="border-secondary">
+        <a class="nav-link sidebar-link text-danger"
+           href="${pageContext.request.contextPath}/logout">
+            <i class="bi bi-box-arrow-right"></i> Logout
+        </a>
+    </div>
+</nav>

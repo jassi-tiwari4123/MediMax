@@ -1,0 +1,43 @@
+# ================================================================
+# OHMS — application.properties EXAMPLE / TEMPLATE
+# Copy this file to application.properties and fill in your values.
+# application.properties is in .gitignore — NEVER commit secrets.
+# ================================================================
+
+# ── Database ──────────────────────────────────────────────────
+db.driver=com.mysql.cj.jdbc.Driver
+db.url=jdbc:mysql://localhost:3306/ohms_db?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+db.username=root
+db.password=YOUR_DB_PASSWORD_HERE
+
+# ── JWT ───────────────────────────────────────────────────────
+# Use a long random string (32+ characters)
+jwt.secret=CHANGE_THIS_TO_A_LONG_RANDOM_SECRET_KEY_AT_LEAST_32_CHARS
+jwt.expiry.ms=1800000
+
+# ── BCrypt ────────────────────────────────────────────────────
+bcrypt.strength=12
+
+# ── Email (Gmail SMTP) ────────────────────────────────────────
+mail.smtp.host=smtp.gmail.com
+mail.smtp.port=587
+mail.smtp.auth=true
+mail.smtp.starttls.enable=true
+mail.from.address=YOUR_GMAIL_ADDRESS@gmail.com
+# Use a Gmail App Password (not your real password)
+# Generate at: myaccount.google.com → Security → App passwords
+mail.from.password=YOUR_GMAIL_APP_PASSWORD
+mail.from.name=OHMS Healthcare
+
+# ── OTP ───────────────────────────────────────────────────────
+otp.expiry.minutes=10
+
+# ── Application ───────────────────────────────────────────────
+app.name=Online Healthcare Management System
+app.base.url=http://localhost:8080/OnlineHealthCareSystem
+app.hospital.name=City General Hospital
+
+# ── PDF output directory ──────────────────────────────────────
+# Windows: C:/ohms/prescriptions
+# Linux/Mac: /tmp/ohms/prescriptions
+pdf.output.dir=C:/ohms/prescriptions

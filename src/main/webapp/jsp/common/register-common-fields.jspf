@@ -1,0 +1,53 @@
+<%-- Shared fields included in both Patient and Doctor registration forms --%>
+<div class="row g-3">
+    <div class="col-md-12">
+        <label class="form-label fw-semibold">Full Name</label>
+        <input type="text" name="fullName" class="form-control"
+               placeholder="Dr. / Mr. / Ms. Full Name" required minlength="2" maxlength="100">
+        <div class="invalid-feedback">Full name is required (min 2 characters).</div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Email Address</label>
+        <input type="email" name="email" class="form-control"
+               placeholder="email@example.com" required>
+        <div class="invalid-feedback">Enter a valid email address.</div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Phone Number</label>
+        <input type="tel" name="phone" class="form-control"
+               placeholder="10-digit mobile number" required
+               pattern="[6-9][0-9]{9}">
+        <div class="invalid-feedback">Enter a valid 10-digit Indian mobile number.</div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Gender</label>
+        <select name="gender" class="form-select" required>
+            <option value="">Select Gender</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+        </select>
+        <div class="invalid-feedback">Please select your gender.</div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Date of Birth</label>
+        <input type="date" name="dateOfBirth" class="form-control"
+               max="${java.time.LocalDate.now()}">
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Password</label>
+        <input type="password" name="password" id="regPassword"
+               class="form-control"
+               placeholder="Min 8 chars, upper + lower + number + special"
+               required minlength="8">
+        <div class="invalid-feedback">
+            Must be 8+ characters with uppercase, lowercase, number and special char.
+        </div>
+    </div>
+    <div class="col-md-6">
+        <label class="form-label fw-semibold">Confirm Password</label>
+        <input type="password" name="confirmPassword" id="confirmPassword"
+               class="form-control" placeholder="Repeat password" required>
+        <div class="invalid-feedback">Passwords must match.</div>
+    </div>
+</div>
